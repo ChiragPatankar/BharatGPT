@@ -247,33 +247,48 @@ async function handleRequest(request, env) {
     });
   }
 
-  // Health check endpoint
+  // Main API info endpoint
   if (url.pathname === '/' && request.method === 'GET') {
     return jsonResponse({
+      server_id: 'bharatgpt-server',
       service: 'BharatGPT API',
       version: '2.0.0',
-      status: 'healthy',
-      description: 'Hyper-local multilingual AI assistant for India',
+      status: 'active',
+      description: 'Hyper-local multilingual AI assistant for India\'s rural regions',
+      author: 'ChiragPatankar',
+      github: 'https://github.com/ChiragPatankar/bharatgpt-server',
+      hackathon: 'Puch.ai x OpenAI Hackathon',
+      team: 'Hackoholics',
       features: [
+        'Hindi-first AI responses',
         'Multilingual support (12+ Indian languages)',
-        'Regional knowledge base',
+        'Regional knowledge base (10+ states)',
         'Government schemes integration',
-        'Location-based personalization',
-        'Season-aware responses'
+        'Location-based personalization (PIN code aware)',
+        'Season-aware agricultural responses',
+        'Voice processing (STT/TTS)',
+        'WhatsApp integration ready'
       ],
       endpoints: {
         '/ask': 'POST - Ask BharatGPT a question with enhanced context',
         '/voice/stt': 'POST - Speech-to-Text conversion',
-        '/voice/tts': 'POST - Text-to-Speech conversion',
+        '/voice/tts': 'POST - Text-to-Speech conversion', 
         '/voice/chat': 'POST - Complete voice conversation (STT + Chat + TTS)',
         '/location': 'GET - Get regional information by pin code',
         '/schemes': 'GET - Get government schemes by location',
         '/languages': 'GET - Get supported languages and regions',
-        '/health': 'GET - Health check'
+        '/health': 'GET - Health check',
+        '/server-info': 'GET - Detailed server information',
+        '/ping': 'GET - Quick status check'
       },
-      supportedLanguages: Object.keys(supportedLanguages).length,
-      supportedRegions: Object.keys(regionalKnowledge).length,
-      hackathon: 'Puch.ai Hackathon 2024'
+      stats: {
+        supportedLanguages: Object.keys(supportedLanguages).length,
+        supportedRegions: Object.keys(regionalKnowledge).length,
+        totalSchemes: Object.values(regionalKnowledge).reduce((acc, region) => acc + region.schemes.length, 0)
+      },
+      powered_by: 'Groq (llama3-8b-8192)',
+      deployment: 'Cloudflare Workers',
+      timestamp: new Date().toISOString()
     });
   }
 
@@ -674,11 +689,167 @@ async function handleRequest(request, env) {
     }
   }
 
+  // Hackathon server info endpoint
+  if (url.pathname === '/server-info' || url.pathname === '/info') {
+    return jsonResponse({
+      server: {
+        id: 'bharatgpt-server',
+        name: 'BharatGPT - Hyper-Local AI for Rural India',
+        version: '2.0.0',
+        status: 'active',
+        description: 'Multilingual AI assistant for India\'s rural regions',
+        author: 'ChiragPatankar',
+        github: 'https://github.com/ChiragPatankar/bharatgpt-server',
+        deployedUrl: 'https://bharatgpt-server.officialchiragp1605.workers.dev',
+        hackathon: 'Puch.ai x OpenAI',
+        capabilities: [
+          'Hindi and 10+ Indian languages',
+          'Location-based personalization',
+          'Government schemes integration',
+          'Agricultural intelligence',
+          'Voice processing (STT/TTS)',
+          'WhatsApp compatible'
+        ]
+      },
+      endpoints: {
+        health: '/health',
+        chat: '/ask',
+        location: '/location',
+        schemes: '/schemes', 
+        languages: '/languages',
+        voiceChat: '/voice/chat',
+        speechToText: '/voice/stt',
+        textToSpeech: '/voice/tts',
+        serverInfo: '/server-info'
+      },
+      metadata: {
+        powered_by: 'Groq (llama3-8b-8192)',
+        deployment: 'Cloudflare Workers',
+        regions_supported: Object.keys(regionalKnowledge).length,
+        languages_supported: Object.keys(supportedLanguages).length,
+        timestamp: new Date().toISOString()
+      }
+    });
+  }
+
+  // Hackathon ping endpoint
+  if (url.pathname === '/ping' || url.pathname === '/status') {
+    return jsonResponse({
+      server_id: 'bharatgpt-server',
+      status: 'online',
+      message: 'BharatGPT server is running',
+      timestamp: new Date().toISOString(),
+      hackathon: 'Puch.ai x OpenAI'
+    });
+  }
+
+  // Webhook endpoint for Puch.ai integration
+  if (url.pathname === '/webhook' && request.method === 'POST') {
+    try {
+      const webhookData = await request.json();
+      
+      return jsonResponse({
+        success: true,
+        server_id: 'bharatgpt-server',
+        received: webhookData,
+        message: 'Webhook received successfully',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      return jsonResponse({
+        error: 'Webhook processing failed',
+        message: error.message
+      }, 400);
+    }
+  }
+
+  // MCP (Model Context Protocol) endpoint 
+  if (url.pathname === '/mcp' && request.method === 'POST') {
+    try {
+      const mcpRequest = await request.json();
+      
+      // Basic MCP response format
+      return jsonResponse({
+        jsonrpc: "2.0",
+        id: mcpRequest.id || 1,
+        result: {
+          server: {
+            name: "BharatGPT",
+            version: "2.0.0",
+            server_id: "bharatgpt-server"
+          },
+          capabilities: {
+            tools: true,
+            resources: true,
+            prompts: true
+          }
+        }
+      });
+    } catch (error) {
+      return jsonResponse({
+        jsonrpc: "2.0",
+        error: {
+          code: -32600,
+          message: "Invalid Request"
+        }
+      }, 400);
+    }
+  }
+
+  // Puch.ai hackathon discovery endpoint
+  if (url.pathname === '/discover' || url.pathname === '/api/discover') {
+    return jsonResponse({
+      id: 'bharatgpt-server',
+      name: 'BharatGPT',
+      description: 'Hyper-local multilingual AI assistant for India',
+      version: '2.0.0',
+      status: 'active',
+      endpoint: 'https://bharatgpt-server.officialchiragp1605.workers.dev',
+      github: 'https://github.com/ChiragPatankar/bharatgpt-server',
+      team: 'Hackoholics',
+      author: 'ChiragPatankar',
+      hackathon: 'Puch.ai x OpenAI',
+      capabilities: [
+        'Hindi-first AI responses',
+        'Regional knowledge (10+ Indian states)',
+        'Government schemes integration',
+        'Voice processing',
+        'WhatsApp integration ready'
+      ],
+      api_endpoints: {
+        chat: '/ask',
+        health: '/health',
+        info: '/server-info'
+      },
+      powered_by: 'Groq',
+      deployment: 'Cloudflare Workers',
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // Alternative server registration format
+  if (url.pathname === '/register' || url.pathname === '/api/register') {
+    return jsonResponse({
+      server: {
+        id: 'bharatgpt-server',
+        name: 'BharatGPT',
+        url: 'https://bharatgpt-server.officialchiragp1605.workers.dev',
+        status: 'registered',
+        hackathon: 'Puch.ai x OpenAI'
+      },
+      registration: {
+        success: true,
+        timestamp: new Date().toISOString(),
+        team: 'Hackoholics'
+      }
+    });
+  }
+
   // 404 for unknown routes
   return jsonResponse({
     error: 'Not found',
     message: 'Endpoint not found',
-    availableEndpoints: ['/', '/health', '/ask', '/voice/stt', '/voice/tts', '/voice/chat', '/location', '/schemes', '/languages']
+    availableEndpoints: ['/', '/health', '/ask', '/voice/stt', '/voice/tts', '/voice/chat', '/location', '/schemes', '/languages', '/server-info', '/ping', '/discover', '/register', '/webhook', '/mcp']
   }, 404);
 }
 
