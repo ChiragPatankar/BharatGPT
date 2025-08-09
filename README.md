@@ -214,9 +214,12 @@ npm install
 # Login to Cloudflare (if not already done)
 wrangler auth login
 
-# Set your Puch.ai API key as a secret
-wrangler secret put PUCH_API_KEY
-# Enter your Puch.ai API key when prompted
+# Set your Groq API key as a secret
+wrangler secret put GROQ_API_KEY
+# Enter your Groq API key when prompted
+
+# Optional: Set OpenAI API key for voice processing
+wrangler secret put OPENAI_API_KEY
 ```
 
 ### 3. Deploy to Cloudflare Workers
@@ -257,7 +260,8 @@ After successful deployment, submit to the Puch.ai Hackathon leaderboard:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `PUCH_API_KEY` | Your Puch.ai API key (stored as Wrangler secret) | Yes |
+| `GROQ_API_KEY` | Your Groq API key for fast AI inference (stored as Wrangler secret) | Yes |
+| `OPENAI_API_KEY` | Your OpenAI API key for voice processing (Whisper STT/TTS) | Optional |
 | `ENVIRONMENT` | Deployment environment (set in wrangler.toml) | No |
 
 ## 🏗️ Architecture

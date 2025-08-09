@@ -4,6 +4,8 @@ main = "src/index.js"
 compatibility_date = "2023-12-01"
 
 # Environment variables (secrets managed via wrangler CLI)
+# Required: GROQ_API_KEY for fast AI inference
+# Optional: OPENAI_API_KEY for voice processing (Whisper)
 [vars]
 ENVIRONMENT = "production"
 

@@ -118,19 +118,19 @@ function getCurrentSeason() {
   return 'सर्दी (Winter)';
 }
 
-// Puch.ai API integration for text
-async function callPuchAI(prompt, apiKey) {
+// Groq API integration for text (Free tier with fast inference)
+async function callGroq(prompt, apiKey) {
   try {
-    console.log('Calling Puch.ai API...');
+    console.log('Calling Groq API...');
     
-    const response = await fetch('https://api.puch.ai/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo', // Adjust model as per Puch.ai documentation
+        model: 'llama3-8b-8192', // Fast Llama 3 model
         messages: [
           {
             role: 'user',
@@ -139,36 +139,37 @@ async function callPuchAI(prompt, apiKey) {
         ],
         max_tokens: 1000,
         temperature: 0.7,
+        stream: false
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Puch.ai API error: ${response.status} ${response.statusText}`);
+      throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Puch.ai API response received');
+    console.log('Groq API response received');
     
     return data.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
   } catch (error) {
-    console.error('Error calling Puch.ai API:', error);
+    console.error('Error calling Groq API:', error);
     throw new Error(`Failed to get AI response: ${error.message}`);
   }
 }
 
-// Puch.ai Speech-to-Text integration
-async function callPuchAISTT(audioFile, language, apiKey) {
+// OpenAI Speech-to-Text integration
+async function callOpenAISTT(audioFile, language, apiKey) {
   try {
-    console.log('Calling Puch.ai STT API...');
+    console.log('Calling OpenAI Whisper API...');
     
     const formData = new FormData();
     formData.append('file', audioFile);
-    formData.append('model', 'whisper-1'); // Adjust based on Puch.ai STT model
+    formData.append('model', 'whisper-1');
     if (language && language !== 'auto') {
       formData.append('language', language);
     }
 
-    const response = await fetch('https://api.puch.ai/v1/audio/transcriptions', {
+    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -177,23 +178,23 @@ async function callPuchAISTT(audioFile, language, apiKey) {
     });
 
     if (!response.ok) {
-      throw new Error(`Puch.ai STT API error: ${response.status} ${response.statusText}`);
+      throw new Error(`OpenAI STT API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Puch.ai STT response received');
+    console.log('OpenAI STT response received');
     
     return data.text || 'Could not transcribe audio.';
   } catch (error) {
-    console.error('Error calling Puch.ai STT API:', error);
+    console.error('Error calling OpenAI STT API:', error);
     throw new Error(`Failed to transcribe audio: ${error.message}`);
   }
 }
 
-// Puch.ai Text-to-Speech integration
-async function callPuchAITTS(text, language, voice, apiKey) {
+// OpenAI Text-to-Speech integration
+async function callOpenAITTS(text, language, voice, apiKey) {
   try {
-    console.log('Calling Puch.ai TTS API...');
+    console.log('Calling OpenAI TTS API...');
     
     // Map language codes to voice preferences
     const voiceMapping = {
@@ -208,14 +209,14 @@ async function callPuchAITTS(text, language, voice, apiKey) {
 
     const selectedVoice = voiceMapping[language] || voice || 'alloy';
 
-    const response = await fetch('https://api.puch.ai/v1/audio/speech', {
+    const response = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'tts-1', // Adjust based on Puch.ai TTS model
+        model: 'tts-1',
         input: text,
         voice: selectedVoice,
         response_format: 'mp3'
@@ -223,13 +224,13 @@ async function callPuchAITTS(text, language, voice, apiKey) {
     });
 
     if (!response.ok) {
-      throw new Error(`Puch.ai TTS API error: ${response.status} ${response.statusText}`);
+      throw new Error(`OpenAI TTS API error: ${response.status} ${response.statusText}`);
     }
 
-    console.log('Puch.ai TTS response received');
+    console.log('OpenAI TTS response received');
     return await response.arrayBuffer();
   } catch (error) {
-    console.error('Error calling Puch.ai TTS API:', error);
+    console.error('Error calling OpenAI TTS API:', error);
     throw new Error(`Failed to generate speech: ${error.message}`);
   }
 }
@@ -301,12 +302,12 @@ async function handleRequest(request, env) {
       }
 
       // Check for API key
-      if (!env.PUCH_API_KEY) {
-        console.error('PUCH_API_KEY not configured - using demo mode');
+      if (!env.GROQ_API_KEY) {
+        console.error('GROQ_API_KEY not configured - using demo mode');
         // Demo mode response
         return jsonResponse({
           success: true,
-          response: `Demo Response: आपका प्रश्न "${prompt}" बहुत अच्छा है। BharatGPT ${location} के लिए ${language} में उत्तर देने के लिए तैयार है। कृपया Puch.ai API key सेट करें।`,
+          response: `Demo Response: आपका प्रश्न "${prompt}" बहुत अच्छा है। BharatGPT ${location} के लिए ${language} में उत्तर देने के लिए तैयार है। कृपया Groq API key सेट करें।`,
           metadata: {
             location: location || 'India',
             language: language || 'English',
@@ -334,8 +335,8 @@ async function handleRequest(request, env) {
         userType || 'citizen'
       );
 
-      // Call Puch.ai API
-      const aiResponse = await callPuchAI(bharatGPTPrompt, env.PUCH_API_KEY);
+      // Call Groq API
+      const aiResponse = await callGroq(bharatGPTPrompt, env.GROQ_API_KEY);
 
       // Get regional context for response metadata
       let regionalContext = null;
@@ -480,8 +481,8 @@ async function handleRequest(request, env) {
         location: location
       });
 
-      // Call Puch.ai STT API
-      const transcription = await callPuchAISTT(audioFile, language, env.PUCH_API_KEY);
+      // Call OpenAI STT API (Whisper)
+      const transcription = await callOpenAISTT(audioFile, language, env.OPENAI_API_KEY || env.GROQ_API_KEY);
 
       // If we have transcription, we can optionally process it through BharatGPT
       let aiResponse = null;
@@ -492,7 +493,7 @@ async function handleRequest(request, env) {
           language === 'auto' ? 'en' : language,
           userType
         );
-        aiResponse = await callPuchAI(bharatGPTPrompt, env.PUCH_API_KEY);
+        aiResponse = await callGroq(bharatGPTPrompt, env.GROQ_API_KEY);
       }
 
       return jsonResponse({
@@ -551,12 +552,12 @@ async function handleRequest(request, env) {
         format: format || 'mp3'
       });
 
-      // Call Puch.ai TTS API
-      const audioBuffer = await callPuchAITTS(
+      // Call OpenAI TTS API
+      const audioBuffer = await callOpenAITTS(
         text,
         language || 'en',
         voice,
-        env.PUCH_API_KEY
+        env.OPENAI_API_KEY || env.GROQ_API_KEY
       );
 
       // Return audio response
@@ -613,7 +614,7 @@ async function handleRequest(request, env) {
       });
 
       // Step 1: Speech to Text
-      const transcription = await callPuchAISTT(audioFile, language, env.PUCH_API_KEY);
+      const transcription = await callOpenAISTT(audioFile, language, env.OPENAI_API_KEY || env.GROQ_API_KEY);
 
       // Step 2: Process through BharatGPT
       const bharatGPTPrompt = createBharatGPTPrompt(
@@ -622,16 +623,16 @@ async function handleRequest(request, env) {
         language === 'auto' ? 'en' : language,
         userType
       );
-      const textResponse = await callPuchAI(bharatGPTPrompt, env.PUCH_API_KEY);
+      const textResponse = await callGroq(bharatGPTPrompt, env.GROQ_API_KEY);
 
       // Step 3: Text to Speech (if requested)
       let audioResponse = null;
       if (responseFormat === 'audio' || responseFormat === 'both') {
-        audioResponse = await callPuchAITTS(
+        audioResponse = await callOpenAITTS(
           textResponse,
           language === 'auto' ? 'en' : language,
           null,
-          env.PUCH_API_KEY
+          env.OPENAI_API_KEY || env.GROQ_API_KEY
         );
       }
 
