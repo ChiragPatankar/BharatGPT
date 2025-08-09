@@ -1,0 +1,27 @@
+{
+  "name": "bharatgpt-server",
+  "version": "1.0.0",
+  "description": "BharatGPT - Hyper-local multilingual AI assistant for India's rural regions",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler publish",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "multilingual",
+    "india",
+    "rural",
+    "cloudflare-workers",
+    "puch-ai",
+    "hackathon"
+  ],
+  "author": "BharatGPT Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231025.0",
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,21 @@
+# Cloudflare Workers configuration for BharatGPT
+name = "bharatgpt-server"
+main = "src/index.js"
+compatibility_date = "2023-12-01"
+
+# Environment variables (secrets managed via wrangler CLI)
+[vars]
+ENVIRONMENT = "production"
+
+# Deployment configuration
+[build]
+command = ""
+
+# KV namespaces (if needed for future caching)
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Routes for custom domain (optional)
+# routes = ["bharatgpt.yourapp.com/*"]

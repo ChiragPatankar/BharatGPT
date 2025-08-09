@@ -1,0 +1,235 @@
+{
+  "bharatgpt_examples": {
+    "description": "Example API requests for testing BharatGPT v2.0 enhanced endpoints",
+    "base_url": "https://bharatgpt-server.<your-subdomain>.workers.dev",
+    "version": "2.0.0",
+    "new_features": [
+      "Enhanced regional knowledge base",
+      "Pin code-based context",
+      "User type support",
+      "Season-aware responses",
+      "Government schemes API",
+      "Languages and location endpoints"
+    ],
+    "examples": [
+      {
+        "name": "Agricultural Query - Hindi with Pin Code",
+        "endpoint": "/ask",
+        "method": "POST",
+        "body": {
+          "prompt": "मैं गेहूं की खेती करता हूं। इस साल कौन सी किस्म बोनी चाहिए?",
+          "location": "110001",
+          "language": "hi",
+          "userType": "farmer"
+        }
+      },
+      {
+        "name": "Government Scheme - Mumbai Pin Code",
+        "endpoint": "/ask",
+        "method": "POST",
+        "body": {
+          "prompt": "How can I apply for solar pump subsidy in Maharashtra?",
+          "location": "400001",
+          "language": "en",
+          "userType": "farmer"
+        }
+      },
+      {
+        "name": "Weather Query - Marathi with Regional Context",
+        "endpoint": "/ask",
+        "method": "POST",
+        "body": {
+          "prompt": "या आठवड्यात हवामान कसे असेल? पीक काढणीसाठी योग्य वेळ आहे का?",
+          "location": "400001",
+          "language": "mr",
+          "userType": "farmer"
+        }
+      },
+      {
+        "name": "Telugu Query - Hyderabad",
+        "endpoint": "/ask",
+        "method": "POST",
+        "body": {
+          "prompt": "రైతు బంధు పథకం గురించి చెప్పండి",
+          "location": "500001",
+          "language": "te",
+          "userType": "farmer"
+        }
+      },
+      {
+        "name": "Regional Information - Delhi",
+        "endpoint": "/location",
+        "method": "GET",
+        "query_params": "?pincode=110001"
+      },
+      {
+        "name": "Government Schemes - Karnataka",
+        "endpoint": "/schemes",
+        "method": "GET",
+        "query_params": "?location=Karnataka"
+      },
+      {
+        "name": "All Government Schemes",
+        "endpoint": "/schemes",
+        "method": "GET",
+        "query_params": ""
+      },
+      {
+        "name": "Supported Languages",
+        "endpoint": "/languages",
+        "method": "GET",
+        "query_params": ""
+      },
+      {
+        "name": "Enhanced Health Check",
+        "endpoint": "/health",
+        "method": "GET",
+        "body": null
+      },
+      {
+        "name": "Service Info with Features",
+        "endpoint": "/",
+        "method": "GET",
+        "body": null
+      },
+      {
+        "name": "Speech-to-Text - Hindi Audio",
+        "endpoint": "/voice/stt",
+        "method": "POST",
+        "content_type": "multipart/form-data",
+        "form_data": {
+          "audio": "[audio file]",
+          "language": "hi",
+          "location": "110001",
+          "userType": "farmer",
+          "processResponse": "true"
+        }
+      },
+      {
+        "name": "Text-to-Speech - Hindi Response",
+        "endpoint": "/voice/tts",
+        "method": "POST",
+        "body": {
+          "text": "दिल्ली में सर्दी में गेहूं और सरसों की खेती अच्छी होती है।",
+          "language": "hi",
+          "voice": "alloy"
+        }
+      },
+      {
+        "name": "Complete Voice Chat - Marathi",
+        "endpoint": "/voice/chat",
+        "method": "POST",
+        "content_type": "multipart/form-data",
+        "form_data": {
+          "audio": "[audio file]",
+          "language": "mr",
+          "location": "400001",
+          "userType": "farmer",
+          "responseFormat": "both"
+        }
+      }
+    ]
+  },
+  "curl_commands": {
+    "description": "Ready-to-use curl commands for testing enhanced BharatGPT API",
+    "commands": [
+      {
+        "name": "Service Overview",
+        "command": "curl https://bharatgpt-server.<your-subdomain>.workers.dev/"
+      },
+      {
+        "name": "Health Check",
+        "command": "curl https://bharatgpt-server.<your-subdomain>.workers.dev/health"
+      },
+      {
+        "name": "Enhanced Agricultural Query with Pin Code",
+        "command": "curl -X POST https://bharatgpt-server.<your-subdomain>.workers.dev/ask -H \"Content-Type: application/json\" -d '{\"prompt\":\"सर्दी में कौन सी फसल बोनी चाहिए?\",\"location\":\"110001\",\"language\":\"hi\",\"userType\":\"farmer\"}'"
+      },
+      {
+        "name": "Government Scheme with Regional Context",
+        "command": "curl -X POST https://bharatgpt-server.<your-subdomain>.workers.dev/ask -H \"Content-Type: application/json\" -d '{\"prompt\":\"How to get solar pump subsidy?\",\"location\":\"380001\",\"language\":\"en\",\"userType\":\"farmer\"}'"
+      },
+      {
+        "name": "Get Regional Information",
+        "command": "curl \"https://bharatgpt-server.<your-subdomain>.workers.dev/location?pincode=400001\""
+      },
+      {
+        "name": "Get Government Schemes for Maharashtra",
+        "command": "curl \"https://bharatgpt-server.<your-subdomain>.workers.dev/schemes?location=Maharashtra\""
+      },
+      {
+        "name": "Get All Supported Languages",
+        "command": "curl https://bharatgpt-server.<your-subdomain>.workers.dev/languages"
+      },
+      {
+        "name": "Multilingual Query - Tamil",
+        "command": "curl -X POST https://bharatgpt-server.<your-subdomain>.workers.dev/ask -H \"Content-Type: application/json\" -d '{\"prompt\":\"என் நெல் வயலில் பூச்சி தாக்குதல் உள்ளது\",\"location\":\"600001\",\"language\":\"ta\",\"userType\":\"farmer\"}'"
+      },
+      {
+        "name": "Text-to-Speech - Generate Hindi Audio",
+        "command": "curl -X POST https://bharatgpt-server.<your-subdomain>.workers.dev/voice/tts -H \"Content-Type: application/json\" -d '{\"text\":\"नमस्कार, मैं BharatGPT हूं। आपकी खेती में कैसे मदद कर सकता हूं?\",\"language\":\"hi\"}' --output bharatgpt-response.mp3"
+      },
+      {
+        "name": "Speech-to-Text - Upload Audio File",
+        "command": "curl -X POST https://bharatgpt-server.<your-subdomain>.workers.dev/voice/stt -F \"audio=@your-audio-file.mp3\" -F \"language=hi\" -F \"location=110001\" -F \"processResponse=true\""
+      }
+    ]
+  },
+  "testing_scenarios": {
+    "description": "Key scenarios to test for hackathon demo",
+    "scenarios": [
+      {
+        "name": "Regional Knowledge Test",
+        "description": "Test different responses for same query from different pin codes",
+        "queries": [
+          {
+            "prompt": "What crops should I grow?",
+            "locations": ["110001", "400001", "560001"],
+            "expected": "Different crop recommendations based on region"
+          }
+        ]
+      },
+      {
+        "name": "Multilingual Support Test",
+        "description": "Test same query in different languages",
+        "queries": [
+          {
+            "prompt_hi": "सरकारी योजनाओं के बारे में बताएं",
+            "prompt_en": "Tell me about government schemes",
+            "prompt_mr": "सरकारी योजनांबद्दल सांगा",
+            "location": "400001"
+          }
+        ]
+      },
+              {
+          "name": "Season-Aware Responses",
+          "description": "Test seasonal context in agricultural advice",
+          "queries": [
+            {
+              "prompt": "What should I plant now?",
+              "location": "110001",
+              "expected": "Season-specific crop recommendations"
+            }
+          ]
+        },
+        {
+          "name": "Voice Processing Test",
+          "description": "Test complete voice interaction flow",
+          "steps": [
+            "1. Record audio question in Hindi: 'सर्दी में कौन सी फसल बोनी चाहिए?'",
+            "2. Send to /voice/chat endpoint with location=110001",
+            "3. Verify transcription accuracy",
+            "4. Check BharatGPT response quality",
+            "5. Test generated audio response"
+          ]
+        },
+        {
+          "name": "Multilingual Voice Test",
+          "description": "Test voice processing across different languages",
+          "languages": ["hi", "mr", "ta", "te", "gu"],
+          "test_phrase": "What crops should I grow?",
+          "expected": "Accurate transcription and response in respective language"
+        }
+    ]
+  }
+}
